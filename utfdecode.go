@@ -14,17 +14,25 @@ var m = regexp.MustCompile("\\\\u[0-9A-Fa-f]{4,}")
 func Decode(str string) string {
 	for _, s := range strings.Fields(str) {
 		us := m.FindAllString(s, -1)
-		for i := 0; i < len(us)-1; i += 2 {
-			e := convertToUTF16(us[i], us[i+1])
-			str = strings.Replace(str, us[i], e, 1)
-			str = strings.Replace(str, us[i+1], "", 1)
-		}
-		if len(us)%2 == 1 {
-			e := html.UnescapeString("&#x" + strings.ToLower(us[len(us)-1][2:]) + ";")
-			str = strings.Replace(str, us[len(us)-1], e, 1)
+		for i := 0; i < len(us); i++ {
+			if isSurrogate(us[i]) {
+				e := convertToUTF16(us[i], us[i+1])
+				str = strings.Replace(str, us[i], e, 1)
+				str = strings.Replace(str, us[i+1], "", 1)
+				i++
+			} else {
+				e := html.UnescapeString("&#x" + strings.ToLower(us[i][2:]) + ";")
+				str = strings.Replace(str, us[i], e, 1)
+			}
 		}
 	}
 	return str
+}
+
+func isSurrogate(s1 string) bool {
+	s1 = strings.TrimPrefix(strings.ToLower(s1), `\u`)
+	i, _ := strconv.ParseInt("0x"+s1, 0, 64)
+	return i >= 0xD800 && i <= 0xDB7F
 }
 
 // https://en.wikipedia.org/wiki/UTF-16
