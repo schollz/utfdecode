@@ -16,7 +16,6 @@ func Decode(str string) string {
 		us := m.FindAllString(s, -1)
 		for i := 0; i < len(us)-1; i += 2 {
 			e := convertToUTF16(us[i], us[i+1])
-			// fmt.Println(us[i], us[i+1], e)
 			str = strings.Replace(str, us[i], e, 1)
 			str = strings.Replace(str, us[i+1], "", 1)
 		}
@@ -30,21 +29,14 @@ func Decode(str string) string {
 
 // https://en.wikipedia.org/wiki/UTF-16
 func convertToUTF16(s1, s2 string) string {
-	if len(s1) == 6 {
-		s1 = s1[2:]
-	}
-	if len(s2) == 6 {
-		s2 = s2[2:]
-	}
-	first := "0x" + strings.ToLower(s1)
-	second := "0x" + strings.ToLower(s2)
-	i, _ := strconv.ParseInt(first, 0, 64)
-	j, _ := strconv.ParseInt(second, 0, 64)
+	s1 = strings.TrimPrefix(strings.ToLower(s1), `\u`)
+	s2 = strings.TrimPrefix(strings.ToLower(s2), `\u`)
+	i, _ := strconv.ParseInt("0x"+s1, 0, 64)
+	j, _ := strconv.ParseInt("0x"+s2, 0, 64)
 	a := (i - 0xD800) * 0x400
 	b := j - 0xDC00
 	c := a + b + 0x10000
-	// fmt.Println(s1, s2, a, b, c)
-	if c < 0 {
+	if c < 0 || a < 0 || b < 0 {
 		return html.UnescapeString("&#x"+s1+";") + html.UnescapeString("&#x"+s2+";")
 	}
 	str := html.UnescapeString("&#" + strconv.Itoa(int(c)) + ";")
