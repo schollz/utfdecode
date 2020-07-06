@@ -1,3 +1,3 @@
-module github.com/schollz/utf16decode
+module github.com/schollz/utfdecode
 
 go 1.14
