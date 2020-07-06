@@ -9,21 +9,23 @@ import (
 
 var m = regexp.MustCompile("\\\\u[0-9A-Fa-f]{4}")
 
-func Decode(s0 string) string {
-	for _, s := range strings.Fields(s0) {
+// Decode takes any string with escaped UTF-32 / UTF-16 and prints it out
+// as un-escaped (decoded) UTF-16.
+func Decode(str string) string {
+	for _, s := range strings.Fields(str) {
 		us := m.FindAllString(s, -1)
 		for i := 0; i < len(us)-1; i += 2 {
 			e := convertToUTF16(us[i], us[i+1])
 			// fmt.Println(us[i], us[i+1], e)
-			s0 = strings.Replace(s0, us[i], e, 1)
-			s0 = strings.Replace(s0, us[i+1], "", 1)
+			str = strings.Replace(str, us[i], e, 1)
+			str = strings.Replace(str, us[i+1], "", 1)
 		}
 		if len(us)%2 == 1 {
 			e := us[len(us)-1]
-			s0 = strings.Replace(s0, e, html.UnescapeString("&#"+e[2:]+";"), 1)
+			str = strings.Replace(str, e, html.UnescapeString("&#"+e[2:]+";"), 1)
 		}
 	}
-	return s0
+	return str
 }
 
 // https://en.wikipedia.org/wiki/UTF-16
