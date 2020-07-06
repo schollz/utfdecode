@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var m = regexp.MustCompile("\\\\u[0-9A-Fa-f]{4}")
+var m = regexp.MustCompile("\\\\u[0-9A-Fa-f]{4,}")
 
 // Decode takes any string with escaped UTF-32 / UTF-16 and prints it out
 // as un-escaped (decoded) UTF-16.
@@ -21,8 +21,8 @@ func Decode(str string) string {
 			str = strings.Replace(str, us[i+1], "", 1)
 		}
 		if len(us)%2 == 1 {
-			e := us[len(us)-1]
-			str = strings.Replace(str, e, html.UnescapeString("&#"+e[2:]+";"), 1)
+			e := html.UnescapeString("&#x" + strings.ToLower(us[len(us)-1][2:]) + ";")
+			str = strings.Replace(str, us[len(us)-1], e, 1)
 		}
 	}
 	return str
@@ -36,8 +36,8 @@ func convertToUTF16(s1, s2 string) string {
 	if len(s2) == 6 {
 		s2 = s2[2:]
 	}
-	first := "0x" + s1
-	second := "0x" + s2
+	first := "0x" + strings.ToLower(s1)
+	second := "0x" + strings.ToLower(s2)
 	i, _ := strconv.ParseInt(first, 0, 64)
 	j, _ := strconv.ParseInt(second, 0, 64)
 	a := (i - 0xD800) * 0x400
