@@ -11,14 +11,14 @@ I wanted to convert UTF-32 codes to UTF-16, often encoded in some JSON. This lib
 For example, the following Go code:
 
 ```golang
-jsonData := `{"text":"Cool! \u2764\ufe0f\ud83d\udc7d\ud83d\ude80"}`
+jsonData := `{"text":"Cool! \u1F47D \u2764\ufe0f\ud83d\udc7d\ud83d\ude80"}`
 fmt.Println(utfdecode.Decode(jsonData))
 ```
 
 will print
 
 ```
-{"text":"Cool! ❤️👽🚀"}
+{"text":"Cool! 👽 ❤️👽🚀"}
 ```
 
 
