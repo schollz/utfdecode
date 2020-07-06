@@ -36,7 +36,7 @@ func convertToUTF16(s1, s2 string) string {
 	a := (i - 0xD800) * 0x400
 	b := j - 0xDC00
 	c := a + b + 0x10000
-	if c < 0 || a < 0 || b < 0 {
+	if c < 0 || a < 0 || b < 0 || len(s1) > 4 || len(s2) > 4 {
 		return html.UnescapeString("&#x"+s1+";") + html.UnescapeString("&#x"+s2+";")
 	}
 	str := html.UnescapeString("&#" + strconv.Itoa(int(c)) + ";")
