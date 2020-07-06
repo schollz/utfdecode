@@ -8,7 +8,7 @@
 I wanted to convert text containing escaped UTF-16 and/or UTF-32 codes to just UTF-16. This library helps do that. It rejexes for unicde strings and then converts them to UTF-16 [using the standard formula](https://en.wikipedia.org/wiki/UTF-16). The code is small enough that you might just consider copy and pasting :)
 
 
-For example, the following Go code:
+For example, the following Go code ([on Go play](https://play.golang.org/p/-NioHUeLZZv)):
 
 ```golang
 jsonData := `{"text":"utf-16:\u2764\u1F47D\u1F680 utf-32:\u2764\ud83d\udc7d\ud83d\ude80"}`
